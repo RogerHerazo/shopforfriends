@@ -15,4 +15,9 @@ class Product{
   Map toJson() {
     return {'price': price, 'name': name, 'category': category};
   }
+
+  @override
+  String toString(){
+    return('price: '+ price.toString() + ' name: '+ name + ' category: '+ category);
+  }
 }

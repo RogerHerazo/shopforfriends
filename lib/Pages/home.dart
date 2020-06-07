@@ -6,6 +6,10 @@ import 'package:shopforfriends/Models/product.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:shopforfriends/Models/shopcart.dart';
+import 'package:shopforfriends/Models/user.dart';
+import 'package:shopforfriends/Pages/checkout.dart';
+
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
@@ -13,6 +17,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   var products = new List<Product>();
+  List<int> cant;
 
   _getProducts() async {
     final http.Response response = await http.get(
@@ -23,6 +28,7 @@ class _HomeState extends State<Home> {
     setState(() {
       Iterable list = json.decode(response.body);
       products = list.map((model) => Product.fromJson(model)).toList();
+      cant = new List.filled(products.length, 0);
     });
   }
 
@@ -30,9 +36,17 @@ class _HomeState extends State<Home> {
     super.initState();
     _getProducts();
   }
+  
+  User user = new User(name :"Roger", email: "roger@gmail.com");
+  List<Product> productlist = [];
+  List<Product> friendproductlist = [];
 
   @override
   Widget build(BuildContext context) {
+    
+    
+  //List<String> shopcart = [];
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Home"),
@@ -54,7 +68,8 @@ class _HomeState extends State<Home> {
                       ])),
               RaisedButton(
                 onPressed: () {
-                    print("Chekout");
+                    print("Chekout...");
+                    _pushPage(context, Checkout(productlist: productlist,));
                   },
                   child: Icon(Icons.shopping_cart),
                   ),
@@ -79,8 +94,30 @@ class _HomeState extends State<Home> {
                       RaisedButton(
                       child: Icon(Icons.add),
                       onPressed: () => {
-
-                      })
+                        productlist.add(products[index]),
+                        print('Added product ' + productlist.length.toString()),
+                        for (var p in productlist) {
+                          print(p.toString())  
+                        },
+                        setState(() {
+                          cant[index] += 1;
+                        })
+                      }),
+                      RaisedButton(
+                      child: Icon(Icons.remove),
+                      onPressed: () => {
+                        if (cant[index] > 0){
+                          productlist.remove(products[index]),
+                          print('Removed product ' + productlist.length.toString()),
+                          for (var p in productlist) {
+                            print(p.toString())  
+                          },
+                          setState(() {
+                            cant[index] -= 1;
+                          }
+                        )},
+                      }),
+                      Text("Cant: " + ((cant[index] >= 0)? cant[index].toString(): "0"))
                     ]
                   )
                 );
@@ -91,4 +128,10 @@ class _HomeState extends State<Home> {
       )
     );
   }
+}
+
+void _pushPage(BuildContext context, Widget page){
+  Navigator.of(context).push(
+    MaterialPageRoute<void>(builder: (_) => page),
+  );
 }
