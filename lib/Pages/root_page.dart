@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shopforfriends/Pages/login_signup_page.dart';
 import 'package:shopforfriends/services/authentication.dart';
-import 'package:shopforfriends/Pages/home_page.dart';
 
 import 'home.dart';
 

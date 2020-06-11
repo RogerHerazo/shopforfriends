@@ -110,32 +110,44 @@ class _HomeState extends State<Home> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
                       Text(products[index].name+"\nPrecio: \$"+products[index].price.toString()),
-                      RaisedButton(
-                      child: Icon(Icons.add),
-                      onPressed: () => {
-                        productlist.add(products[index]),
-                        print('Added product ' + productlist.length.toString()),
-                        for (var p in productlist) {
-                          print(p.toString())  
-                        },
-                        setState(() {
-                          cant[index] += 1;
-                        })
-                      }),
-                      RaisedButton(
-                      child: Icon(Icons.remove),
-                      onPressed: () => {
-                        if (cant[index] > 0){
-                          productlist.remove(products[index]),
-                          print('Removed product ' + productlist.length.toString()),
-                          for (var p in productlist) {
-                            print(p.toString())  
-                          },
-                          setState(() {
-                            cant[index] -= 1;
-                          }
-                        )},
-                      }),
+                      Container(
+                        // padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        child: Row(
+                          children: <Widget>[
+                          Container(
+                        width: 50,
+                        child: RaisedButton(
+                          child: Icon(Icons.add),
+                          onPressed: () => {
+                            productlist.add(products[index]),
+                            print('Added product ' + productlist.length.toString()),
+                            for (var p in productlist) {
+                              print(p.toString())  
+                            },
+                            setState(() {
+                              cant[index] += 1;
+                            })
+                          })
+                      ),
+                          Container(
+                            width: 50,
+                            child: RaisedButton(
+                              child: Icon(Icons.remove),
+                              onPressed: () => {
+                                if (cant[index] > 0){
+                                  productlist.remove(products[index]),
+                                  print('Removed product ' + productlist.length.toString()),
+                                  for (var p in productlist) {
+                                    print(p.toString())  
+                                  },
+                                  setState(() {
+                                    cant[index] -= 1;
+                                  }
+                                )},
+                              })
+                          ),
+                        ],)
+                      ),
                       Text("Cant: " + ((cant[index] >= 0)? cant[index].toString(): "0"))
                     ]
                   )
