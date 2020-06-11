@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1076228293998",
+    "firebase_url": "https://movil-class.firebaseio.com",
+    "project_id": "movil-class",
+    "storage_bucket": "movil-class.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1076228293998:android:7ceafe96e428bccec02d7f",
+        "android_client_info": {
+          "package_name": "com.example.shopforfriends"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1076228293998-sf4o6tugp9kbpou7mi8q0q19a2rotj2p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzEobi3_QiFwzjRlKKGlHf7Fh9oc1f41c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1076228293998-sf4o6tugp9kbpou7mi8q0q19a2rotj2p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

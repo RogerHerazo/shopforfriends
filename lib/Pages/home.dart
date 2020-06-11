@@ -1,16 +1,20 @@
 
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:shopforfriends/Models/product.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import 'package:shopforfriends/Models/shopcart.dart';
 import 'package:shopforfriends/Models/user.dart';
 import 'package:shopforfriends/Pages/checkout.dart';
+import 'package:shopforfriends/services/authentication.dart';
 
 class Home extends StatefulWidget {
+  Home({Key key, this.auth, this.userId, this.logoutCallback})
+      : super(key: key);
+
+  final BaseAuth auth;
+  final VoidCallback logoutCallback;
+  final String userId;
+
   @override
   _HomeState createState() => _HomeState();
 }
@@ -36,6 +40,15 @@ class _HomeState extends State<Home> {
     super.initState();
     _getProducts();
   }
+
+  signOut() async {
+    try {
+      await widget.auth.signOut();
+      widget.logoutCallback();
+    } catch (e) {
+      print(e);
+    }
+  }
   
   User user = new User(name :"Roger", email: "roger@gmail.com");
   List<Product> productlist = [];
@@ -50,6 +63,12 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Home"),
+        actions: <Widget>[
+            new FlatButton(
+                child: new Text('Logout',
+                    style: new TextStyle(fontSize: 17.0, color: Colors.white)),
+                onPressed: signOut)
+          ],
       ),
       body: Center(
         child: Column(
