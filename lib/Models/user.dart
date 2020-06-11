@@ -1,19 +1,18 @@
 class User{
   String name;
   String email;
-  User
-({this.name, this.email});
+  String uid;
+  User({this.uid, this.name, this.email});
 
-  factory User
-.fromJson(Map<String, dynamic> json) {
-    return User
-  (
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      uid: json['uid'],
       name: json['name'],
       email: json['email'],
     );
   }
 
   Map toJson() {
-    return {'name': name, 'email': email};
+    return {'uid': uid, 'name': name, 'email': email};
   }
 }

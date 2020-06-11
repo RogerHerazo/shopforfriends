@@ -25,13 +25,13 @@ class _EndState extends State<End> {
                     ]
                   )
                 ),
-                RaisedButton(
-                onPressed: () {
-                    print("Chekout...");
-                    _pushPage(context, Login());
-                  },
-                  child: Text("LogOut"),
-                ),
+                // RaisedButton(
+                // onPressed: () {
+                //     print("Chekout...");
+                //     _pushPage(context, Login());
+                //   },
+                //   child: Text("LogOut"),
+                // ),
                 RaisedButton(
                 onPressed: () {
                     print("Chekout...");

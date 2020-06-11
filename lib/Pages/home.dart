@@ -1,4 +1,7 @@
 
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shopforfriends/Models/product.dart';
 import 'package:http/http.dart' as http;
@@ -23,6 +26,28 @@ class _HomeState extends State<Home> {
   var products = new List<Product>();
   List<int> cant;
 
+  initState() {
+    super.initState();
+    _getUser();
+  }
+
+  _getUser() async {
+    await _getProducts();
+
+    Firestore.instance
+      .collection('users')
+      .document(widget.userId)
+      .get()
+      .then((DocumentSnapshot ds) {
+        log('loading user info!');
+        _user = new User(name: ds.data['email'], email: ds.data['email'], uid: widget.userId);
+        if (ds.data['shopcart']) {
+          // productlist.add(products[ds.data['shopcart']['index']]);
+          // cant[ds.data['shopcart']['index']] = ds.data['shopcart']['index']
+        }
+    });
+  }
+
   _getProducts() async {
     final http.Response response = await http.get(
       'https://frutiland.herokuapp.com/search'
@@ -36,9 +61,29 @@ class _HomeState extends State<Home> {
     });
   }
 
-  initState() {
-    super.initState();
-    _getProducts();
+  _updateShopcart(int index, int quantity) async {
+    if (quantity == 0) {
+      await Firestore.instance.collection('users')
+        .document(widget.userId)
+        .updateData({
+          'shopcart.$index': FieldValue.delete()
+        });
+    } else {
+      await Firestore.instance.collection('users')
+        .document(widget.userId)
+        .setData({
+            'shopcart': {
+              '$index': {
+                'price': products[index].price,
+                'name': products[index].name,
+                'category': products[index].category,
+                'quantity': quantity,
+              }
+            }
+          }, 
+          merge: true
+        );
+    }
   }
 
   signOut() async {
@@ -50,16 +95,13 @@ class _HomeState extends State<Home> {
     }
   }
   
-  User user = new User(name :"Roger", email: "roger@gmail.com");
   List<Product> productlist = [];
   List<Product> friendproductlist = [];
 
+  User _user;
+
   @override
   Widget build(BuildContext context) {
-    
-    
-  //List<String> shopcart = [];
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Home"),
@@ -75,16 +117,19 @@ class _HomeState extends State<Home> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
+            Container(
+              padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+              child:Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text("Username: ${_user?.email}"),
+                ]
+              )
+            ),
             Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-            Container(
-                  child:Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Text("Username: "),
-                      ])),
               RaisedButton(
                 onPressed: () {
                     print("Chekout...");
@@ -94,11 +139,14 @@ class _HomeState extends State<Home> {
                   ),
               RaisedButton(
                 onPressed: () {
-                    print("View Friends Shopping List");
-                  },
-                  child: Text("View Friends"),
-                  ),
+                  print("View Friends Shopping List");
+                },
+              child: Text("View Friends"),
+              ),
             ]),
+            Divider(
+              color: Colors.black,
+            ),
             Expanded(
               child:ListView.builder(
               shrinkWrap: false,
@@ -120,13 +168,14 @@ class _HomeState extends State<Home> {
                           child: Icon(Icons.add),
                           onPressed: () => {
                             productlist.add(products[index]),
+                            setState(() {
+                              cant[index] += 1;
+                            }),
+                            _updateShopcart(index, cant[index]),
                             print('Added product ' + productlist.length.toString()),
                             for (var p in productlist) {
                               print(p.toString())  
-                            },
-                            setState(() {
-                              cant[index] += 1;
-                            })
+                            }
                           })
                       ),
                           Container(
@@ -136,14 +185,15 @@ class _HomeState extends State<Home> {
                               onPressed: () => {
                                 if (cant[index] > 0){
                                   productlist.remove(products[index]),
+                                  setState(() {
+                                    cant[index] -= 1;
+                                  }),
+                                  _updateShopcart(index, cant[index]),
                                   print('Removed product ' + productlist.length.toString()),
                                   for (var p in productlist) {
                                     print(p.toString())  
                                   },
-                                  setState(() {
-                                    cant[index] -= 1;
-                                  }
-                                )},
+                                },
                               })
                           ),
                         ],)
