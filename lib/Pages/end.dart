@@ -2,18 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:shopforfriends/Pages/home.dart';
 import 'package:shopforfriends/Pages/login.dart';
 import 'package:shopforfriends/services/authentication.dart';
+import 'package:shopforfriends/services/provider.dart';
 
 class End extends StatefulWidget {
   End({
     Key key, 
-    @required this.auth,
-    @required this.userId,
-    @required this.logoutCallback
+    @required this.appProvider
   }) : super(key: key);
 
-  final BaseAuth auth;
-  final VoidCallback logoutCallback;
-  final String userId;
+  final AppProvider appProvider;
 
   @override
   _EndState createState() => _EndState();
@@ -41,7 +38,7 @@ class _EndState extends State<End> {
                 // RaisedButton(
                 // onPressed: () {
                 //     print("Chekout...");
-                //     _pushPage(context, Login());
+                //     _pushPage(context, Login(appProvider: wdiget.appProvider));
                 //   },
                 //   child: Text("LogOut"),
                 // ),
@@ -49,9 +46,7 @@ class _EndState extends State<End> {
                 onPressed: () {
                     print("Chekout...");
                     _pushPage(context, Home(
-                        userId: widget.userId,
-                        auth: widget.auth,
-                        logoutCallback: widget.logoutCallback,
+                        appProvider: widget.appProvider
                       )
                     );
                   },

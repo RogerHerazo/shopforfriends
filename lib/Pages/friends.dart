@@ -1,10 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-import 'package:shopforfriends/Models/product.dart';
 import 'package:shopforfriends/Models/user.dart';
-import 'package:shopforfriends/Pages/end.dart';
 import 'package:shopforfriends/Pages/friend_detail.dart';
+import 'package:shopforfriends/services/provider.dart';
 
 enum LoadStatus {
   NOT_DETERMINED,
@@ -12,9 +10,9 @@ enum LoadStatus {
 }
 
 class Friends extends StatefulWidget { 
-  const Friends({Key key, this.userId}) : super(key: key);
+  const Friends({Key key, @required this.appProvider}) : super(key: key);
 
-  final String userId;
+  final AppProvider appProvider;
 
   @override
   _FriendsState createState() => _FriendsState();
@@ -40,7 +38,7 @@ class _FriendsState extends State<Friends> {
         setState(() {
           snapshot.documents.forEach((u) {
             print('${u.data}}');
-            if (u.documentID != widget.userId) {
+            if (u.documentID != widget.appProvider.userId) {
               users.add(new User(uid: u.documentID, email: u['email']));
             }
           });
@@ -81,7 +79,7 @@ class _FriendsState extends State<Friends> {
                                 child: InkWell(
                                   splashColor: Colors.blue.withAlpha(30),
                                   onTap: () {
-                                    _pushPage(context, FriendDetail(userId: users[index].uid));
+                                    _pushPage(context, FriendDetail(appProvider: widget.appProvider, userId: users[index].uid,));
                                   },
                                   child: Text(users[index].email)
                                 )
@@ -127,20 +125,7 @@ class _FriendsState extends State<Friends> {
       appBar: AppBar(
         title: Text("Friends"),
       ),
-      body: ChangeNotifierProvider<SingleModel>(
-        create: (context) => SingleModel(chkstate : "Pay"),
-        child: loadStatusWidget(context)     
-      ), 
+      body: loadStatusWidget(context) 
     );
-  }
-}
-
-class SingleModel extends ChangeNotifier {
-  String chkstate;
-  SingleModel({this.chkstate});
-
-  void changeValue(String chk) {
-    chkstate = chk;
-    notifyListeners(); 
   }
 }

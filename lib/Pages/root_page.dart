@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shopforfriends/Pages/login_signup_page.dart';
 import 'package:shopforfriends/services/authentication.dart';
+import 'package:shopforfriends/services/provider.dart';
 
 import 'home.dart';
 
@@ -11,9 +12,9 @@ enum AuthStatus {
 }
 
 class RootPage extends StatefulWidget {
-  RootPage({this.auth});
+  RootPage({@required this.appProvider});
 
-  final BaseAuth auth;
+  final AppProvider appProvider;
 
   @override
   State<StatefulWidget> createState() => new _RootPageState();
@@ -21,15 +22,17 @@ class RootPage extends StatefulWidget {
 
 class _RootPageState extends State<RootPage> {
   AuthStatus authStatus = AuthStatus.NOT_DETERMINED;
-  String _userId = "";
 
   @override
   void initState() {
     super.initState();
-    widget.auth.getCurrentUser().then((user) {
+    widget.appProvider.auth = new Auth();
+    widget.appProvider.logoutCallback = logoutCallback;
+  
+    widget.appProvider.auth.getCurrentUser().then((user) {
       setState(() {
         if (user != null) {
-          _userId = user?.uid;
+          widget.appProvider.userId = user?.uid;
         }
         authStatus =
             user?.uid == null ? AuthStatus.NOT_LOGGED_IN : AuthStatus.LOGGED_IN;
@@ -38,9 +41,9 @@ class _RootPageState extends State<RootPage> {
   }
 
   void loginCallback() {
-    widget.auth.getCurrentUser().then((user) {
+    widget.appProvider.auth.getCurrentUser().then((user) {
       setState(() {
-        _userId = user.uid.toString();
+        widget.appProvider.userId = user.uid.toString();
       });
     });
     setState(() {
@@ -51,7 +54,7 @@ class _RootPageState extends State<RootPage> {
   void logoutCallback() {
     setState(() {
       authStatus = AuthStatus.NOT_LOGGED_IN;
-      _userId = "";
+      widget.appProvider.userId = "";
     });
   }
 
@@ -72,16 +75,14 @@ class _RootPageState extends State<RootPage> {
         break;
       case AuthStatus.NOT_LOGGED_IN:
         return new LoginSignupPage(
-          auth: widget.auth,
+          auth: widget.appProvider.auth,
           loginCallback: loginCallback,
         );
         break;
       case AuthStatus.LOGGED_IN:
-        if (_userId.length > 0 && _userId != null) {
+        if (widget.appProvider.userId.length > 0 && widget.appProvider.userId != null) {
           return new Home(
-            userId: _userId,
-            auth: widget.auth,
-            logoutCallback: logoutCallback,
+            appProvider: widget.appProvider
           );
         } else
           return buildWaitingScreen();

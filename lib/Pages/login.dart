@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:shopforfriends/Pages/home.dart';
+import 'package:shopforfriends/services/provider.dart';
 
 class Login extends StatelessWidget {
+  Login({
+    Key key, 
+    @required this.appProvider
+  }) : super(key: key);
+
+  final AppProvider appProvider;
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,7 +22,7 @@ class Login extends StatelessWidget {
           children: <Widget>[
             RaisedButton(
             child: Text("Login"),
-            onPressed: () => _pushPage(context, Home())),
+            onPressed: () => _pushPage(context, Home(appProvider: appProvider))),
           ],
         ),
       ),

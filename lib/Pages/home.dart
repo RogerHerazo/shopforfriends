@@ -9,7 +9,7 @@ import 'dart:convert';
 import 'package:shopforfriends/Models/user.dart';
 import 'package:shopforfriends/Pages/checkout.dart';
 import 'package:shopforfriends/Pages/friends.dart';
-import 'package:shopforfriends/services/authentication.dart';
+import 'package:shopforfriends/services/provider.dart';
 
 enum LoadStatus {
   NOT_DETERMINED,
@@ -19,14 +19,10 @@ enum LoadStatus {
 class Home extends StatefulWidget {
   Home({
     Key key,
-    @required this.auth,
-    @required this.userId,
-    @required this.logoutCallback
+    @required this.appProvider
   }) : super(key: key);
 
-  final BaseAuth auth;
-  final VoidCallback logoutCallback;
-  final String userId;
+  final AppProvider appProvider;
 
   @override
   _HomeState createState() => _HomeState();
@@ -36,7 +32,6 @@ class _HomeState extends State<Home> {
   LoadStatus loadStatus = LoadStatus.NOT_DETERMINED;
   List<Product> products = new List<Product>();
   List<int> quantities;
-  User _user;
 
   initState() {
     super.initState();
@@ -48,12 +43,12 @@ class _HomeState extends State<Home> {
 
     await Firestore.instance
       .collection('users')
-      .document(widget.userId)
+      .document(widget.appProvider.userId)
       .get()
       .then((DocumentSnapshot ds) {
         log('loading user info!');
         setState(() {
-          _user = new User(name: ds.data['email'], email: ds.data['email'], uid: widget.userId);
+          widget.appProvider.user = new User(name: ds.data['email'], email: ds.data['email'], uid: widget.appProvider.userId);
         });
         if (ds.data['shopcart'] != null) {
           log('loading shopcart info! + ${ds.data['shopcart'].length}');
@@ -91,13 +86,13 @@ class _HomeState extends State<Home> {
 
     if (quantity == 0) {
       await Firestore.instance.collection('users')
-        .document(widget.userId)
+        .document(widget.appProvider.userId)
         .updateData({
           'shopcart.$index': FieldValue.delete()
         });
     } else {
       await Firestore.instance.collection('users')
-        .document(widget.userId)
+        .document(widget.appProvider.userId)
         .setData({
             'shopcart': {
               '$index': {
@@ -119,8 +114,8 @@ class _HomeState extends State<Home> {
 
   signOut() async {
     try {
-      await widget.auth.signOut();
-      widget.logoutCallback();
+      await widget.appProvider.auth.signOut();
+      widget.appProvider.logoutCallback();
     } catch (e) {
       print(e);
     }
@@ -181,7 +176,7 @@ class _HomeState extends State<Home> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Text(
-                    "${_user?.email}",
+                    "${widget.appProvider.user?.email}",
                     style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.bold
@@ -201,9 +196,7 @@ class _HomeState extends State<Home> {
                     print("Chekout...");
                     _pushPage(context, Checkout(
                       shopcart: _buildShopCart(),
-                      userId: widget.userId,
-                      auth: widget.auth,
-                      logoutCallback: widget.logoutCallback
+                      appProvider: widget.appProvider,
                     ));
                   },
                   child: Icon(Icons.shopping_cart),
@@ -213,7 +206,7 @@ class _HomeState extends State<Home> {
                     borderRadius: BorderRadius.all(Radius.circular(16.0))),
                 onPressed: () {
                   print("View Friends Shopping List");
-                  _pushPage(context, Friends(userId: widget.userId));//Checkout(shopcart: _buildShopCart(), userId: widget.userId));
+                  _pushPage(context, Friends(appProvider: widget.appProvider)); //Checkout(shopcart: _buildShopCart(), userId: widget.userId));
                 },
               child: Text("View Friends"),
               ),

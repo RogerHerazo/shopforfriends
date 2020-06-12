@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shopforfriends/Models/product.dart';
 import 'package:shopforfriends/Models/user.dart';
 import 'package:shopforfriends/Pages/end.dart';
+import 'package:shopforfriends/services/provider.dart';
 
 enum LoadStatus {
   NOT_DETERMINED,
@@ -11,9 +12,11 @@ enum LoadStatus {
 }
 
 class FriendDetail extends StatefulWidget { 
-  const FriendDetail({Key key, this.userId}) : super(key: key);
+  const FriendDetail({Key key, @required this.appProvider, @required this.userId}) : super(key: key);
 
+  final AppProvider appProvider;
   final String userId;
+
   @override
   _FriendDetailState createState() => _FriendDetailState();
 }
@@ -35,7 +38,7 @@ class _FriendDetailState extends State<FriendDetail> {
       .get()
       .then((DocumentSnapshot ds) {
         setState(() {
-          _user = new User(name: ds.data['email'], email: ds.data['email'], uid: widget.userId);
+          _user = new User(name: ds.data['email'], email: ds.data['email'], uid: widget.appProvider.userId);
         });
         if (ds.data['shopcart'] != null) {
           setState(() {
@@ -61,6 +64,30 @@ class _FriendDetailState extends State<FriendDetail> {
 
   void _pushPage(BuildContext context, Widget page) {
     Navigator.pushAndRemoveUntil(context, MaterialPageRoute<void>(builder: (_) => page), (route) => false);
+  }
+
+  void _ackAlert(
+      {BuildContext context,
+      String title,
+      String message,
+      bool redirect}) async {
+    await showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('$title'),
+          content: Text('$message'),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Ok'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget _buildUI(){
@@ -106,14 +133,12 @@ class _FriendDetailState extends State<FriendDetail> {
             Container(
               child: RaisedButton(
                 onPressed: () {
-                  // if(singleModel.chkstate == "Pay"){
-                  //   print("Pay...");
-                  //   singleModel.changeValue("End checkout");
-                  //   _createPayment();
-                  // }else{
-                  //   print("End checkout...");
-                  //   _pushPage(context, End());
-                  // }
+                  if (widget.appProvider.shopcartLocked) {
+                    _ackAlert(context: context, title: 'Error', message: 'You have closed your shopcart!');
+                  } else {
+                    _ackAlert(context: context, title: 'Operation successfull', message: 'Your friend\'s list was successfully added into yours!');
+                    widget.appProvider.friend = widget.userId;
+                  }
                 },
                 child: Text('I want to pay it!'),
               ),

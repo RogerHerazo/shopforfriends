@@ -1,11 +1,8 @@
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:shopforfriends/Models/product.dart';
 import 'package:shopforfriends/Pages/end.dart';
-import 'package:shopforfriends/services/authentication.dart';
+import 'package:shopforfriends/services/provider.dart';
 
 enum LoadStatus {
   NOT_DETERMINED,
@@ -16,15 +13,11 @@ class Checkout extends StatefulWidget {
   const Checkout({
     Key key, 
     @required this.shopcart,
-    @required this.userId,
-    @required this.logoutCallback,
-    @required this.auth
+    @required this.appProvider
   }) : super(key: key);
 
   final List<Product> shopcart;
-  final String userId;
-  final BaseAuth auth;
-  final VoidCallback logoutCallback;
+  final AppProvider appProvider;
 
   @override
   _CheckoutState createState() => _CheckoutState();
@@ -60,7 +53,7 @@ class _CheckoutState extends State<Checkout> {
     //   );
 
     await Firestore.instance.collection('users')
-      .document(widget.userId)
+      .document(widget.appProvider.userId)
       .updateData({
           'shopcart': FieldValue.delete()
         });
@@ -127,9 +120,7 @@ class _CheckoutState extends State<Checkout> {
                 await _createPayment();
 
                 _pushPage(context, End(
-                  userId: widget.userId,
-                  auth: widget.auth,
-                  logoutCallback: widget.logoutCallback
+                  appProvider: widget.appProvider
                 ));
               },
               child: Text('Checkout'),
