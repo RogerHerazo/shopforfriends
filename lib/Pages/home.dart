@@ -10,6 +10,11 @@ import 'package:shopforfriends/Models/user.dart';
 import 'package:shopforfriends/Pages/checkout.dart';
 import 'package:shopforfriends/services/authentication.dart';
 
+enum AuthStatus {
+  NOT_DETERMINED,
+  VIEW_LOADED,
+}
+
 class Home extends StatefulWidget {
   Home({Key key, this.auth, this.userId, this.logoutCallback})
       : super(key: key);
@@ -23,8 +28,12 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  AuthStatus authStatus = AuthStatus.NOT_DETERMINED;
   var products = new List<Product>();
   List<int> cant;
+  List<Product> productlist = [];
+  List<Product> friendproductlist = [];
+  User _user;
 
   initState() {
     super.initState();
@@ -34,17 +43,31 @@ class _HomeState extends State<Home> {
   _getUser() async {
     await _getProducts();
 
-    Firestore.instance
+    await Firestore.instance
       .collection('users')
       .document(widget.userId)
       .get()
       .then((DocumentSnapshot ds) {
         log('loading user info!');
-        _user = new User(name: ds.data['email'], email: ds.data['email'], uid: widget.userId);
-        if (ds.data['shopcart']) {
-          // productlist.add(products[ds.data['shopcart']['index']]);
-          // cant[ds.data['shopcart']['index']] = ds.data['shopcart']['index']
+        setState(() {
+          _user = new User(name: ds.data['email'], email: ds.data['email'], uid: widget.userId);
+        });
+        if (ds.data['shopcart'] != null) {
+          log('loading shopcart info! + ${ds.data['shopcart'].length}');
+          setState(() {
+            ds.data['shopcart'].forEach((k,v) {
+              // log('loading shopcart info! + $k');
+              cant[int.parse(k)] = v['quantity'];
+              productlist.add(products[int.parse(k)]);
+            });
+          });
+          // log('loading user info!');
         }
+        // log('loading user info!');
+      });
+
+    setState(() {
+      authStatus = AuthStatus.VIEW_LOADED;
     });
   }
 
@@ -94,14 +117,17 @@ class _HomeState extends State<Home> {
       print(e);
     }
   }
-  
-  List<Product> productlist = [];
-  List<Product> friendproductlist = [];
 
-  User _user;
+  Widget buildWaitingScreen() {
+    return Scaffold(
+      body: Container(
+        alignment: Alignment.center,
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget home() {
     return Scaffold(
       appBar: AppBar(
         title: Text("Home"),
@@ -209,10 +235,24 @@ class _HomeState extends State<Home> {
       )
     );
   }
-}
 
-void _pushPage(BuildContext context, Widget page){
-  Navigator.of(context).push(
-    MaterialPageRoute<void>(builder: (_) => page),
-  );
+  void _pushPage(BuildContext context, Widget page){
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => page),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    switch (authStatus) {
+      case AuthStatus.NOT_DETERMINED:
+        return buildWaitingScreen();
+        break;
+      case AuthStatus.VIEW_LOADED:
+        return home();
+        break;
+      default:
+        return buildWaitingScreen();
+    } 
+  }
 }
