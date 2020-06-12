@@ -67,9 +67,14 @@ class _FriendsState extends State<Friends> {
             Expanded(
               child: Container(
                 child: Card(
+                  elevation : 10 ,
                   child: Column(
                     children: <Widget> [
-                      Text("My Friends List"),
+                      Text("Friends List",
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold
+                    )),
                       Expanded(
                         child: ListView.builder(
                           shrinkWrap: false,
@@ -83,7 +88,12 @@ class _FriendsState extends State<Friends> {
                                   onTap: () {
                                     _pushPage(context, FriendDetail(userId: users[index].uid));
                                   },
-                                  child: Text(users[index].email)
+                                  child: Text(users[index].email ,
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      color : Colors.blue
+                    ))
                                 )
                               ),
                             );
