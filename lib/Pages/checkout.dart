@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:shopforfriends/Models/product.dart';
 import 'package:shopforfriends/Pages/end.dart';
+import 'package:shopforfriends/services/authentication.dart';
 
 enum LoadStatus {
   NOT_DETERMINED,
@@ -10,10 +11,19 @@ enum LoadStatus {
 }
 
 class Checkout extends StatefulWidget { 
-  const Checkout({Key key, @required this.shopcart, this.userId}) : super(key: key);
+  const Checkout({
+    Key key, 
+    @required this.shopcart,
+    @required this.userId,
+    @required this.logoutCallback,
+    @required this.auth
+  }) : super(key: key);
 
   final List<Product> shopcart;
   final String userId;
+  final BaseAuth auth;
+  final VoidCallback logoutCallback;
+
   @override
   _CheckoutState createState() => _CheckoutState();
 }
@@ -47,15 +57,17 @@ class _CheckoutState extends State<Checkout> {
     //     merge: true
     //   );
 
-    // await Firestore.instance.collection('users')
-    //   .document(widget.userId)
-    //   .updateData({
-    //       'shopcart': FieldValue.delete()
-    //     });
+    await Firestore.instance.collection('users')
+      .document(widget.userId)
+      .updateData({
+          'shopcart': FieldValue.delete()
+        });
 
-    // setState(() {
-    //   loadStatus = LoadStatus.VIEW_LOADED;
-    // });
+    widget.shopcart.clear();
+
+    setState(() {
+      loadStatus = LoadStatus.VIEW_LOADED;
+    });
   }
 
   void _pushPage(BuildContext context, Widget page) {
@@ -98,52 +110,54 @@ class _CheckoutState extends State<Checkout> {
                 )
               )
             ),
-            Consumer<SingleModel>(
-              builder: (context, singleModel, child){
-                return Container(
-                  child: RaisedButton(
-                onPressed: () {
-                    
-                    if(singleModel.chkstate == "Pay"){
-                      print("Pay...");
-                      singleModel.changeValue("End checkout");
-                      _createPayment();
-                    }else{
-                      print("End checkout...");
-                      _pushPage(context, End());
-                    }
-                    
-                  },
-                  child: Text(singleModel.chkstate),
-                  ),
-                );
+            Container(
+              child: RaisedButton(
+              onPressed: () async {
+                await _createPayment();
+
+                _pushPage(context, End(
+                  userId: widget.userId,
+                  auth: widget.auth,
+                  logoutCallback: widget.logoutCallback
+                ));
               },
+              child: Text('Checkout'),
+              ),
             )
           ],
         ),
       );
   }
   
+  Widget buildWaitingScreen() {
+    return Scaffold(
+      body: Container(
+        alignment: Alignment.center,
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+
+  Widget loadStatusWidget(BuildContext context) {
+    switch (loadStatus) {
+      case LoadStatus.NOT_DETERMINED:
+        return buildWaitingScreen();
+        break;
+      case LoadStatus.VIEW_LOADED:
+        return _buildUI(widget.shopcart)  ;
+        break;
+      default:
+        return buildWaitingScreen();
+    } 
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Checkout"),
       ),
-      body: ChangeNotifierProvider<SingleModel>(
-        create: (context) => SingleModel(chkstate : "Pay"),
-        child: _buildUI(widget.shopcart)     
-      ), 
+      body: loadStatusWidget(context)
     );
-  }
-}
-
-class SingleModel extends ChangeNotifier {
-  String chkstate;
-  SingleModel({this.chkstate});
-
-  void changeValue(String chk) {
-    chkstate = chk;
-    notifyListeners(); 
   }
 }

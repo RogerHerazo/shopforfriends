@@ -17,8 +17,12 @@ enum LoadStatus {
 }
 
 class Home extends StatefulWidget {
-  Home({Key key, this.auth, this.userId, this.logoutCallback})
-      : super(key: key);
+  Home({
+    Key key,
+    @required this.auth,
+    @required this.userId,
+    @required this.logoutCallback
+  }) : super(key: key);
 
   final BaseAuth auth;
   final VoidCallback logoutCallback;
@@ -189,7 +193,12 @@ class _HomeState extends State<Home> {
                     borderRadius: BorderRadius.all(Radius.circular(16.0))),
                 onPressed: () {
                     print("Chekout...");
-                    _pushPage(context, Checkout(shopcart: _buildShopCart(), userId: widget.userId));
+                    _pushPage(context, Checkout(
+                      shopcart: _buildShopCart(),
+                      userId: widget.userId,
+                      auth: widget.auth,
+                      logoutCallback: widget.logoutCallback
+                    ));
                   },
                   child: Icon(Icons.shopping_cart),
                   ),
