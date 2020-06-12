@@ -98,6 +98,28 @@ class _FriendsState extends State<Friends> {
         ),
       );
   }
+
+  Widget buildWaitingScreen() {
+    return Scaffold(
+      body: Container(
+        alignment: Alignment.center,
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+
+  Widget loadStatusWidget(BuildContext context) {
+    switch (loadStatus) {
+      case LoadStatus.NOT_DETERMINED:
+        return buildWaitingScreen();
+        break;
+      case LoadStatus.VIEW_LOADED:
+        return _buildUI()  ;
+        break;
+      default:
+        return buildWaitingScreen();
+    } 
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -107,7 +129,7 @@ class _FriendsState extends State<Friends> {
       ),
       body: ChangeNotifierProvider<SingleModel>(
         create: (context) => SingleModel(chkstate : "Pay"),
-        child: _buildUI()     
+        child: loadStatusWidget(context)     
       ), 
     );
   }

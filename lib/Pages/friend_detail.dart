@@ -19,7 +19,7 @@ class FriendDetail extends StatefulWidget {
 }
 
 class _FriendDetailState extends State<FriendDetail> {
-  LoadStatus loadStatus = LoadStatus.VIEW_LOADED;
+  LoadStatus loadStatus = LoadStatus.NOT_DETERMINED;
   List<Product> shopcart = new List<Product>();
   User _user;
 
@@ -74,7 +74,11 @@ class _FriendDetailState extends State<FriendDetail> {
                 child: Card(
                   child: Column(
                     children: <Widget> [
-                      Text("Friend Detail"),
+                      Text("Username: ${_user?.email}"),
+                      Divider(
+                        color: Colors.black,
+                      ),
+                      Text("Active shopcart: "),
                       Expanded(
                         child: ListView.builder(
                           shrinkWrap: false,
@@ -124,16 +128,38 @@ class _FriendDetailState extends State<FriendDetail> {
         ),
       );
   }
+
+  Widget buildWaitingScreen() {
+    return Scaffold(
+      body: Container(
+        alignment: Alignment.center,
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+
+  Widget loadStatusWidget(BuildContext context) {
+    switch (loadStatus) {
+      case LoadStatus.NOT_DETERMINED:
+        return buildWaitingScreen();
+        break;
+      case LoadStatus.VIEW_LOADED:
+        return _buildUI()  ;
+        break;
+      default:
+        return buildWaitingScreen();
+    } 
+  }
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Checkout"),
+        title: Text("Friend Detail"),
       ),
       body: ChangeNotifierProvider<SingleModel>(
         create: (context) => SingleModel(chkstate : "Pay"),
-        child: _buildUI()     
+        child: loadStatusWidget(context)     
       ), 
     );
   }
