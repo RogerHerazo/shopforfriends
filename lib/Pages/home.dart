@@ -185,6 +185,8 @@ class _HomeState extends State<Home> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               RaisedButton(
+                 shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(16.0))),
                 onPressed: () {
                     print("Chekout...");
                     _pushPage(context, Checkout(shopcart: _buildShopCart(), userId: widget.userId));
@@ -192,6 +194,8 @@ class _HomeState extends State<Home> {
                   child: Icon(Icons.shopping_cart),
                   ),
               RaisedButton(
+                 shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(16.0))),
                 onPressed: () {
                   print("View Friends Shopping List");
                   _pushPage(context, Friends(userId: widget.userId));//Checkout(shopcart: _buildShopCart(), userId: widget.userId));
@@ -263,7 +267,11 @@ class _HomeState extends State<Home> {
                           ),
                         ],)
                       ),
-                      Text("Amount: " + ((quantities[index] >= 0) ? quantities[index].toString() : "0"))
+                      Text(((quantities[index] >= 0) ? quantities[index].toString() : "0"), style: TextStyle(
+      fontSize: 10,
+      fontWeight: FontWeight.bold,
+      color: Colors.blue
+      ))
                     ]
                   )
                 );
