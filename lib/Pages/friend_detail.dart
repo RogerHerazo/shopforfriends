@@ -74,7 +74,12 @@ class _FriendDetailState extends State<FriendDetail> {
                 child: Card(
                   child: Column(
                     children: <Widget> [
-                      Text("Username: ${_user?.email}"),
+                      Text("${_user?.email}",
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      color : Colors.red
+                    )),
                       Divider(
                         color: Colors.black,
                       ),
@@ -85,16 +90,26 @@ class _FriendDetailState extends State<FriendDetail> {
                           itemCount: shopcart.length,
                           itemBuilder: (context,index){
                           return Card(
-                            margin: const EdgeInsets.all(10.0),
-                              child: Center(
-                                child: Text(
+                            
+                            elevation : 5 ,
+                            margin: const EdgeInsets.all(15.0),
+                              
+                                child: 
+                                
+
+                                Text(
                                   shopcart[index].name+
+                                  "                                  \X "+
+                                  shopcart[index].amount.toString() +
                                   "\nPrice: \$"+
-                                  shopcart[index].price.toString()+
-                                  "\nAmount: \$"+
-                                  shopcart[index].amount.toString()
-                                ),
-                              )
+                                  shopcart[index].price.toString()
+                                  
+                                 , style: TextStyle(
+      fontSize: 25,
+      fontWeight: FontWeight.bold,
+      color: Colors.black
+      )),
+                              
                             );
                         })
                       )
