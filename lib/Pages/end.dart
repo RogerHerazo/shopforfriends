@@ -1,7 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:shopforfriends/Pages/home.dart';
 import 'package:shopforfriends/Pages/login.dart';
+import 'package:shopforfriends/services/authentication.dart';
+
 class End extends StatefulWidget {
+  End({
+    Key key, 
+    @required this.auth,
+    @required this.userId,
+    @required this.logoutCallback
+  }) : super(key: key);
+
+  final BaseAuth auth;
+  final VoidCallback logoutCallback;
+  final String userId;
+
   @override
   _EndState createState() => _EndState();
 }
@@ -11,7 +24,7 @@ class _EndState extends State<End> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Checkout"),
+        title: Text("Successfull Payment"),
       ),
       body: Center(
         child: Column(
@@ -35,7 +48,12 @@ class _EndState extends State<End> {
                 RaisedButton(
                 onPressed: () {
                     print("Chekout...");
-                    _pushPage(context, Home());
+                    _pushPage(context, Home(
+                        userId: widget.userId,
+                        auth: widget.auth,
+                        logoutCallback: widget.logoutCallback,
+                      )
+                    );
                   },
                   child: Text("Shop Again"),
                 ),

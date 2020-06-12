@@ -17,8 +17,12 @@ enum LoadStatus {
 }
 
 class Home extends StatefulWidget {
-  Home({Key key, this.auth, this.userId, this.logoutCallback})
-      : super(key: key);
+  Home({
+    Key key,
+    @required this.auth,
+    @required this.userId,
+    @required this.logoutCallback
+  }) : super(key: key);
 
   final BaseAuth auth;
   final VoidCallback logoutCallback;
@@ -176,10 +180,13 @@ class _HomeState extends State<Home> {
               child:Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Text("${_user?.email}",  style: TextStyle(
-      fontSize: 10,
-      fontWeight: FontWeight.bold
-      ))),
+                  Text(
+                    "${_user?.email}",
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold
+                    )
+                  )
                 ]
               )
             ),
@@ -192,7 +199,12 @@ class _HomeState extends State<Home> {
                     borderRadius: BorderRadius.all(Radius.circular(16.0))),
                 onPressed: () {
                     print("Chekout...");
-                    _pushPage(context, Checkout(shopcart: _buildShopCart(), userId: widget.userId));
+                    _pushPage(context, Checkout(
+                      shopcart: _buildShopCart(),
+                      userId: widget.userId,
+                      auth: widget.auth,
+                      logoutCallback: widget.logoutCallback
+                    ));
                   },
                   child: Icon(Icons.shopping_cart),
                   ),
@@ -230,9 +242,9 @@ class _HomeState extends State<Home> {
                         width: 50,
                         child: RaisedButton(
                           shape: RoundedRectangleBorder(
-  borderRadius: BorderRadius.circular(18.0),
-  side: BorderSide(color: Colors.blue)
-),
+                            borderRadius: BorderRadius.circular(18.0),
+                            side: BorderSide(color: Colors.blue)
+                          ),
                           child: Icon(Icons.add),
                           onPressed: () => {
                             // productlist.add(products[index]),
