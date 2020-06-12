@@ -180,7 +180,10 @@ class _HomeState extends State<Home> {
               child:Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Text("Username: ${_user?.email}"),
+                  Text("${_user?.email}",  style: TextStyle(
+      fontSize: 10,
+      fontWeight: FontWeight.bold
+      ))),
                 ]
               )
             ),
