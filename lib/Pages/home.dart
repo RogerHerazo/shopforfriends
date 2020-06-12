@@ -8,9 +8,10 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shopforfriends/Models/user.dart';
 import 'package:shopforfriends/Pages/checkout.dart';
+import 'package:shopforfriends/Pages/friends.dart';
 import 'package:shopforfriends/services/authentication.dart';
 
-enum AuthStatus {
+enum LoadStatus {
   NOT_DETERMINED,
   VIEW_LOADED,
 }
@@ -28,11 +29,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  AuthStatus authStatus = AuthStatus.NOT_DETERMINED;
-  var products = new List<Product>();
-  List<int> cant;
-  List<Product> productlist = [];
-  List<Product> friendproductlist = [];
+  LoadStatus loadStatus = LoadStatus.NOT_DETERMINED;
+  List<Product> products = new List<Product>();
+  List<int> quantities;
   User _user;
 
   initState() {
@@ -56,18 +55,15 @@ class _HomeState extends State<Home> {
           log('loading shopcart info! + ${ds.data['shopcart'].length}');
           setState(() {
             ds.data['shopcart'].forEach((k,v) {
-              // log('loading shopcart info! + $k');
-              cant[int.parse(k)] = v['quantity'];
-              productlist.add(products[int.parse(k)]);
+              quantities[int.parse(k)] = v['quantity'];
+              // productlist.add(products[int.parse(k)]);
             });
           });
-          // log('loading user info!');
         }
-        // log('loading user info!');
       });
 
     setState(() {
-      authStatus = AuthStatus.VIEW_LOADED;
+      loadStatus = LoadStatus.VIEW_LOADED;
     });
   }
 
@@ -80,11 +76,15 @@ class _HomeState extends State<Home> {
     setState(() {
       Iterable list = json.decode(response.body);
       products = list.map((model) => Product.fromJson(model)).toList();
-      cant = new List.filled(products.length, 0);
+      quantities = new List.filled(products.length, 0);
     });
   }
 
   _updateShopcart(int index, int quantity) async {
+    setState(() {
+      loadStatus = LoadStatus.NOT_DETERMINED;
+    });
+
     if (quantity == 0) {
       await Firestore.instance.collection('users')
         .document(widget.userId)
@@ -107,6 +107,10 @@ class _HomeState extends State<Home> {
           merge: true
         );
     }
+
+    setState(() {
+      loadStatus = LoadStatus.VIEW_LOADED;
+    });
   }
 
   signOut() async {
@@ -116,6 +120,30 @@ class _HomeState extends State<Home> {
     } catch (e) {
       print(e);
     }
+  }
+
+  void _pushPage(BuildContext context, Widget page){
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => page),
+    );
+  }
+
+  List<Product> _buildShopCart(){
+    List<Product> shopCart = new List<Product>();
+    for (var i = 0; i < products.length; i++) {
+      if (quantities[i] > 0) {
+        shopCart.add(
+          new Product(
+            index: products[i].index,
+            price: products[i].price,
+            name: products[i].name,
+            category: products[i].category,
+            amount: quantities[i],
+          )
+        );
+      }
+    }
+    return shopCart;
   }
 
   Widget buildWaitingScreen() {
@@ -159,13 +187,14 @@ class _HomeState extends State<Home> {
               RaisedButton(
                 onPressed: () {
                     print("Chekout...");
-                    _pushPage(context, Checkout(productlist: productlist,));
+                    _pushPage(context, Checkout(shopcart: _buildShopCart(), userId: widget.userId));
                   },
                   child: Icon(Icons.shopping_cart),
                   ),
               RaisedButton(
                 onPressed: () {
                   print("View Friends Shopping List");
+                  _pushPage(context, Friends(userId: widget.userId));//Checkout(shopcart: _buildShopCart(), userId: widget.userId));
                 },
               child: Text("View Friends"),
               ),
@@ -183,7 +212,7 @@ class _HomeState extends State<Home> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
-                      Text(products[index].name+"\nPrecio: \$"+products[index].price.toString()),
+                      Text(products[index].name+"\nPrice: \$"+products[index].price.toString()),
                       Container(
                         // padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                         child: Row(
@@ -193,15 +222,15 @@ class _HomeState extends State<Home> {
                         child: RaisedButton(
                           child: Icon(Icons.add),
                           onPressed: () => {
-                            productlist.add(products[index]),
+                            // productlist.add(products[index]),
                             setState(() {
-                              cant[index] += 1;
+                              quantities[index] += 1;
                             }),
-                            _updateShopcart(index, cant[index]),
-                            print('Added product ' + productlist.length.toString()),
-                            for (var p in productlist) {
-                              print(p.toString())  
-                            }
+                            _updateShopcart(index, quantities[index]),
+                            // print('Added product ' + productlist.length.toString()),
+                            // for (var p in productlist) {
+                            //   print(p.toString())  
+                            // }
                           })
                       ),
                           Container(
@@ -209,22 +238,22 @@ class _HomeState extends State<Home> {
                             child: RaisedButton(
                               child: Icon(Icons.remove),
                               onPressed: () => {
-                                if (cant[index] > 0){
-                                  productlist.remove(products[index]),
+                                if (quantities[index] > 0){
+                                  // productlist.remove(products[index]),
                                   setState(() {
-                                    cant[index] -= 1;
+                                    quantities[index] -= 1;
                                   }),
-                                  _updateShopcart(index, cant[index]),
-                                  print('Removed product ' + productlist.length.toString()),
-                                  for (var p in productlist) {
-                                    print(p.toString())  
-                                  },
+                                  _updateShopcart(index, quantities[index]),
+                                  // print('Removed product ' + productlist.length.toString()),
+                                  // for (var p in productlist) {
+                                  //   print(p.toString())  
+                                  // },
                                 },
                               })
                           ),
                         ],)
                       ),
-                      Text("Cant: " + ((cant[index] >= 0)? cant[index].toString(): "0"))
+                      Text("Amount: " + ((quantities[index] >= 0) ? quantities[index].toString() : "0"))
                     ]
                   )
                 );
@@ -236,19 +265,13 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void _pushPage(BuildContext context, Widget page){
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => page),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    switch (authStatus) {
-      case AuthStatus.NOT_DETERMINED:
+    switch (loadStatus) {
+      case LoadStatus.NOT_DETERMINED:
         return buildWaitingScreen();
         break;
-      case AuthStatus.VIEW_LOADED:
+      case LoadStatus.VIEW_LOADED:
         return home();
         break;
       default:
