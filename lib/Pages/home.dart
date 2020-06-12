@@ -179,18 +179,25 @@ class _HomeState extends State<Home> {
               itemCount: products.length,
               itemBuilder: (context,index){
               return Card(
+                elevation : 10 , 
                 margin: const EdgeInsets.all(10.0),
+                
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                      Text(products[index].name+"\nPrecio: \$"+products[index].price.toString()),
+                  children: <Widget>[ 
+                      Text(products[index].name+ "\nPrecio: \$"+products[index].price.toString(), style: TextStyle(fontWeight: FontWeight.bold),),
+                      
                       Container(
-                        // padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
                         child: Row(
                           children: <Widget>[
                           Container(
                         width: 50,
                         child: RaisedButton(
+                          shape: RoundedRectangleBorder(
+  borderRadius: BorderRadius.circular(18.0),
+  side: BorderSide(color: Colors.blue)
+),
                           child: Icon(Icons.add),
                           onPressed: () => {
                             productlist.add(products[index]),
@@ -202,11 +209,15 @@ class _HomeState extends State<Home> {
                             for (var p in productlist) {
                               print(p.toString())  
                             }
-                          })
+                          }, color : Colors.blue,textColor : Colors.white)
                       ),
                           Container(
                             width: 50,
-                            child: RaisedButton(
+                 child: RaisedButton(
+                          shape: RoundedRectangleBorder(
+  borderRadius: BorderRadius.circular(18.0),
+  side: BorderSide(color: Colors.red)
+),
                               child: Icon(Icons.remove),
                               onPressed: () => {
                                 if (cant[index] > 0){
@@ -220,7 +231,7 @@ class _HomeState extends State<Home> {
                                     print(p.toString())  
                                   },
                                 },
-                              })
+                              } , color : Colors.red,textColor : Colors.white)
                           ),
                         ],)
                       ),
