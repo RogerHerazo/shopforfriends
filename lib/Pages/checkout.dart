@@ -47,15 +47,15 @@ class _CheckoutState extends State<Checkout> {
     //     merge: true
     //   );
 
-    await Firestore.instance.collection('users')
-      .document(widget.userId)
-      .updateData({
-          'shopcart': FieldValue.delete()
-        });
+    // await Firestore.instance.collection('users')
+    //   .document(widget.userId)
+    //   .updateData({
+    //       'shopcart': FieldValue.delete()
+    //     });
 
-    setState(() {
-      loadStatus = LoadStatus.VIEW_LOADED;
-    });
+    // setState(() {
+    //   loadStatus = LoadStatus.VIEW_LOADED;
+    // });
   }
 
   void _pushPage(BuildContext context, Widget page) {

@@ -103,26 +103,20 @@ class _FriendDetailState extends State<FriendDetail> {
                 )
               )
             ),
-            Consumer<SingleModel>(
-              builder: (context, singleModel, child){
-                return Container(
-                  child: RaisedButton(
+            Container(
+              child: RaisedButton(
                 onPressed: () {
-                    
-                    // if(singleModel.chkstate == "Pay"){
-                    //   print("Pay...");
-                    //   singleModel.changeValue("End checkout");
-                    //   _createPayment();
-                    // }else{
-                    //   print("End checkout...");
-                    //   _pushPage(context, End());
-                    // }
-                    
-                  },
-                  child: Text(singleModel.chkstate),
-                  ),
-                );
-              },
+                  // if(singleModel.chkstate == "Pay"){
+                  //   print("Pay...");
+                  //   singleModel.changeValue("End checkout");
+                  //   _createPayment();
+                  // }else{
+                  //   print("End checkout...");
+                  //   _pushPage(context, End());
+                  // }
+                },
+                child: Text('I want to pay it!'),
+              ),
             )
           ],
         ),
@@ -157,20 +151,7 @@ class _FriendDetailState extends State<FriendDetail> {
       appBar: AppBar(
         title: Text("Friend Detail"),
       ),
-      body: ChangeNotifierProvider<SingleModel>(
-        create: (context) => SingleModel(chkstate : "Pay"),
-        child: loadStatusWidget(context)     
-      ), 
+      body: loadStatusWidget(context)       
     );
-  }
-}
-
-class SingleModel extends ChangeNotifier {
-  String chkstate;
-  SingleModel({this.chkstate});
-
-  void changeValue(String chk) {
-    chkstate = chk;
-    notifyListeners(); 
   }
 }
