@@ -180,10 +180,13 @@ class _HomeState extends State<Home> {
               child:Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Text("${_user?.email}",  style: TextStyle(
-      fontSize: 10,
-      fontWeight: FontWeight.bold
-      ))),
+                  Text(
+                    "${_user?.email}",
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold
+                    )
+                  )
                 ]
               )
             ),
@@ -239,9 +242,9 @@ class _HomeState extends State<Home> {
                         width: 50,
                         child: RaisedButton(
                           shape: RoundedRectangleBorder(
-  borderRadius: BorderRadius.circular(18.0),
-  side: BorderSide(color: Colors.blue)
-),
+                            borderRadius: BorderRadius.circular(18.0),
+                            side: BorderSide(color: Colors.blue)
+                          ),
                           child: Icon(Icons.add),
                           onPressed: () => {
                             // productlist.add(products[index]),
