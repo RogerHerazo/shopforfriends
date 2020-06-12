@@ -261,10 +261,10 @@ class _HomeState extends State<Home> {
                           Container(
                             width: 50,
                  child: RaisedButton(
-                          shape: RoundedRectangleBorder(
-  borderRadius: BorderRadius.circular(18.0),
-  side: BorderSide(color: Colors.red)
-),
+                      shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18.0),
+                      side: BorderSide(color: Colors.red)
+                    ),
                               child: Icon(Icons.remove),
                               onPressed: () => {
                                 if (quantities[index] > 0){

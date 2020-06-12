@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -70,6 +72,14 @@ class _CheckoutState extends State<Checkout> {
     });
   }
 
+  String _getTotal() {
+    double total = 0;
+    for (var product in widget.shopcart) {
+      total = total + (product.amount.toInt() * product.price.toDouble());
+    }
+    return total.toString();
+  }
+
   void _pushPage(BuildContext context, Widget page) {
     Navigator.pushAndRemoveUntil(context, MaterialPageRoute<void>(builder: (_) => page), (route) => false);
   }
@@ -110,6 +120,7 @@ class _CheckoutState extends State<Checkout> {
                 )
               )
             ),
+            Text("total: ${_getTotal()}"),
             Container(
               child: RaisedButton(
               onPressed: () async {
