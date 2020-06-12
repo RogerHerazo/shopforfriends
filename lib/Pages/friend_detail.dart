@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:shopforfriends/Models/product.dart';
+import 'package:shopforfriends/Models/user.dart';
 import 'package:shopforfriends/Pages/end.dart';
 
 enum LoadStatus {
@@ -9,49 +10,49 @@ enum LoadStatus {
   VIEW_LOADED,
 }
 
-class Checkout extends StatefulWidget { 
-  const Checkout({Key key, @required this.shopcart, this.userId}) : super(key: key);
+class FriendDetail extends StatefulWidget { 
+  const FriendDetail({Key key, this.userId}) : super(key: key);
 
-  final List<Product> shopcart;
   final String userId;
   @override
-  _CheckoutState createState() => _CheckoutState();
+  _FriendDetailState createState() => _FriendDetailState();
 }
 
-class _CheckoutState extends State<Checkout> {
+class _FriendDetailState extends State<FriendDetail> {
   LoadStatus loadStatus = LoadStatus.VIEW_LOADED;
+  List<Product> shopcart = new List<Product>();
+  User _user;
 
-  _createPayment() async {
-    setState(() {
-      loadStatus = LoadStatus.NOT_DETERMINED;
-    });
+  initState() {
+    super.initState();
+    _getUser();
+  }
 
-    // var db= Firestore.instance();
-    // var batch = db.batch();
-    // batch.setData(
-    //   db.collection(’users’).document(’id’),
-    // //And the data to add in it.
-    // {'status': 'Approved'}
-    // );
-
-    var json = {};
-    for (var product in widget.shopcart) {
-      json['${DateTime.now()}'] = product.toJson();
-    }
-
-    // await Firestore.instance.collection('users')
-    //   .document(widget.userId)
-    //   .setData({
-    //       'payments': { json }
-    //     }, 
-    //     merge: true
-    //   );
-
-    await Firestore.instance.collection('users')
+  _getUser() async {
+    await Firestore.instance
+      .collection('users')
       .document(widget.userId)
-      .updateData({
-          'shopcart': FieldValue.delete()
+      .get()
+      .then((DocumentSnapshot ds) {
+        setState(() {
+          _user = new User(name: ds.data['email'], email: ds.data['email'], uid: widget.userId);
         });
+        if (ds.data['shopcart'] != null) {
+          setState(() {
+            ds.data['shopcart'].forEach((k,v) {
+              shopcart.add(
+                new Product(
+                  index: v['index'],
+                  price: v['price'],
+                  name: v['name'],
+                  category: v['category'],
+                  amount: v['quantity'],
+                )
+              );
+            });
+          });
+        }
+      });
 
     setState(() {
       loadStatus = LoadStatus.VIEW_LOADED;
@@ -62,7 +63,7 @@ class _CheckoutState extends State<Checkout> {
     Navigator.pushAndRemoveUntil(context, MaterialPageRoute<void>(builder: (_) => page), (route) => false);
   }
 
-  Widget _buildUI(List<Product> shopcart){
+  Widget _buildUI(){
     return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -73,7 +74,7 @@ class _CheckoutState extends State<Checkout> {
                 child: Card(
                   child: Column(
                     children: <Widget> [
-                      Text("My Shopping List"),
+                      Text("Friend Detail"),
                       Expanded(
                         child: ListView.builder(
                           shrinkWrap: false,
@@ -104,14 +105,14 @@ class _CheckoutState extends State<Checkout> {
                   child: RaisedButton(
                 onPressed: () {
                     
-                    if(singleModel.chkstate == "Pay"){
-                      print("Pay...");
-                      singleModel.changeValue("End checkout");
-                      _createPayment();
-                    }else{
-                      print("End checkout...");
-                      _pushPage(context, End());
-                    }
+                    // if(singleModel.chkstate == "Pay"){
+                    //   print("Pay...");
+                    //   singleModel.changeValue("End checkout");
+                    //   _createPayment();
+                    // }else{
+                    //   print("End checkout...");
+                    //   _pushPage(context, End());
+                    // }
                     
                   },
                   child: Text(singleModel.chkstate),
@@ -132,7 +133,7 @@ class _CheckoutState extends State<Checkout> {
       ),
       body: ChangeNotifierProvider<SingleModel>(
         create: (context) => SingleModel(chkstate : "Pay"),
-        child: _buildUI(widget.shopcart)     
+        child: _buildUI()     
       ), 
     );
   }
