@@ -143,25 +143,43 @@ class _CheckoutState extends State<Checkout> {
             Expanded(
               child: Container(
                 child: Card(
+                  
+                  elevation : 10 , 
+                  
+                  margin: const EdgeInsets.all(20.0),
                   child: Column(
                     children: <Widget> [
-                      Text("My Shopping List"),
+                      Text("Shopping List", style: TextStyle(
+      fontSize: 30,
+      fontWeight: FontWeight.bold,
+      color: Colors.blue
+      )),
                       Expanded(
                         child: ListView.builder(
                           shrinkWrap: false,
                           itemCount: widget.shopcart.length,
                           itemBuilder: (context,index){
                           return Card(
-                            margin: const EdgeInsets.all(10.0),
-                              child: Center(
-                                child: Text(
+                            
+                            elevation : 5 ,
+                            margin: const EdgeInsets.all(15.0),
+                              
+                                child: 
+                                
+
+                                Text(
                                   shopcart[index].name+
+                                  "                                  \X "+
+                                  shopcart[index].amount.toString() +
                                   "\nPrice: \$"+
-                                  shopcart[index].price.toString()+
-                                  "\nAmount: \$"+
-                                  shopcart[index].amount.toString()
-                                ),
-                              )
+                                  shopcart[index].price.toString()
+                                  
+                                 , style: TextStyle(
+      fontSize: 25,
+      fontWeight: FontWeight.bold,
+      color: Colors.black
+      )),
+                              
                             );
                         })
                       ),
@@ -204,7 +222,10 @@ class _CheckoutState extends State<Checkout> {
                 )
               )
             ),
-            Text("total: ${_getTotal()}"),
+            Text("\$"+"${_getTotal()}", style: TextStyle(
+      fontSize: 30,
+      fontWeight: FontWeight.bold
+      )),
             Container(
               child: RaisedButton(
               onPressed: () async {

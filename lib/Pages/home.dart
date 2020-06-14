@@ -181,7 +181,7 @@ class _HomeState extends State<Home> {
                   Text(
                     "${widget.appProvider.user?.email}",
                     style: TextStyle(
-                      fontSize: 10,
+                      fontSize: 25,
                       fontWeight: FontWeight.bold
                     )
                   )
@@ -279,7 +279,7 @@ class _HomeState extends State<Home> {
                         ],)
                       ),
                       Text(((quantities[index] >= 0) ? quantities[index].toString() : "0"), style: TextStyle(
-      fontSize: 10,
+      fontSize: 30,
       fontWeight: FontWeight.bold,
       color: Colors.blue
       ))
