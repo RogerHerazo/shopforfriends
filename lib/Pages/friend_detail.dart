@@ -1,9 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:shopforfriends/Models/product.dart';
 import 'package:shopforfriends/Models/user.dart';
-import 'package:shopforfriends/Pages/end.dart';
 import 'package:shopforfriends/services/provider.dart';
 
 enum LoadStatus {
@@ -60,6 +58,16 @@ class _FriendDetailState extends State<FriendDetail> {
     setState(() {
       loadStatus = LoadStatus.VIEW_LOADED;
     });
+  }
+
+  _updateShopcart() async {
+    await Firestore.instance.collection('users')
+      .document(widget.appProvider.userId)
+      .setData({
+          'friend_shopcart': '${widget.userId}'
+        }, 
+        merge: true
+      );
   }
 
   void _pushPage(BuildContext context, Widget page) {
@@ -138,6 +146,7 @@ class _FriendDetailState extends State<FriendDetail> {
                   } else {
                     _ackAlert(context: context, title: 'Operation successfull', message: 'Your friend\'s list was successfully added into yours!');
                     widget.appProvider.friend = widget.userId;
+                    _updateShopcart();
                   }
                 },
                 child: Text('I want to pay it!'),

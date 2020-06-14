@@ -49,6 +49,9 @@ class _HomeState extends State<Home> {
         log('loading user info!');
         setState(() {
           widget.appProvider.user = new User(name: ds.data['email'], email: ds.data['email'], uid: widget.appProvider.userId);
+          if (ds.data['friend_shopcart'] != null) {
+            widget.appProvider.friend = ds.data['friend_shopcart'];
+          }
         });
         if (ds.data['shopcart'] != null) {
           log('loading shopcart info! + ${ds.data['shopcart'].length}');

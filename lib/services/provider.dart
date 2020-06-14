@@ -9,6 +9,6 @@ class AppProvider extends ChangeNotifier {
   String userId = "";
   User user;
   bool shopcartLocked = false;
-  String friend;
+  String friend = "";
   
 }
