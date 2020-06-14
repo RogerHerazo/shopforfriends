@@ -160,13 +160,9 @@ class _CheckoutState extends State<Checkout> {
                           itemCount: widget.shopcart.length,
                           itemBuilder: (context,index){
                           return Card(
-                            
                             elevation : 5 ,
                             margin: const EdgeInsets.all(15.0),
-                              
                                 child: 
-                                
-
                                 Text(
                                   shopcart[index].name+
                                   "                                  \X "+
@@ -175,10 +171,10 @@ class _CheckoutState extends State<Checkout> {
                                   shopcart[index].price.toString()
                                   
                                  , style: TextStyle(
-      fontSize: 25,
-      fontWeight: FontWeight.bold,
-      color: Colors.black
-      )),
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black
+                                  )),
                               
                             );
                         })
@@ -190,22 +186,36 @@ class _CheckoutState extends State<Checkout> {
                           child: Card(
                             child: Column(
                               children: <Widget> [
-                                Text("My Friend Shop List"),
-                                widget.appProvider.friend == '' ? Text('null') : Text('Username: ${friend.email}'),
+                                Text("My Friend Shop List", style: TextStyle(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue
+                                )),
+                                widget.appProvider.friend == '' ? Text('null') : Text('Username: ${friend.email}',
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      color : Colors.red
+                    )),
                                 Expanded(
                                   child: ListView.builder(
                                     shrinkWrap: false,
                                     itemCount: friendShopcart.length,
                                     itemBuilder: (context,index){
                                     return Card(
-                                      margin: const EdgeInsets.all(10.0),
+                                      elevation : 5 ,
+                                      margin: const EdgeInsets.all(15.0),
                                         child: Center(
                                           child: widget.appProvider.friend == '' ? Text('null') : Text(
-                                            friendShopcart[index].name+
-                                            "\nPrice: \$"+
-                                            friendShopcart[index].price.toString()+
-                                            "\nAmount: \$"+
-                                            friendShopcart[index].amount.toString()
+                                              friendShopcart[index].name+
+                                              "                                  \X "+
+                                              friendShopcart[index].amount.toString() +
+                                              "\nPrice: \$"+
+                                              friendShopcart[index].price.toString(), style: TextStyle(
+                                              fontSize: 25,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black
+                                            )
                                           )
                                         )
                                       );
